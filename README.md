@@ -230,8 +230,6 @@ $TTL    604800
 @       IN      A       10.67.2.2
 @       IN      AAAA    ::1' > /etc/bind/it07/eldia.it07.com
 
-echo "DNS configuration for eldia.it07.com has been set up."
-
 echo ';
 ; BIND data file for local loopback interface
 ;
@@ -246,8 +244,6 @@ $TTL    604800
 @       IN      NS      marley.it07.com.
 @       IN      A       10.67.1.2
 @       IN      AAAA    ::1' > /etc/bind/it07/marley.it07.com
-
-echo "DNS configuration for eldia.it07.com has been set up."
 ```
 
 Pertama install library untuk setup DNS, lalu set domain name dan path file konfigurasinya, saya letakkan di `/etc/bind/it07`
@@ -318,3 +314,23 @@ Pertama untuk bangsa marley karena melalui `eth1` maka subnet `10.67.1.0` dan ka
 
 **Eldia**
 Lalu untuk bangsa eldia ada 2 pendefinisian range juga yaitu `range 10.67.2.9 10.67.2.27` dan `range 10.67.2.81 10.67.2.243`. Dan juga dns server mengarah ke IP Fritz `10.67.4.2` dan terakhir untuk `default-lease-time` di `1800 (30 menit)` dengan max `5220 (87 menit)`
+
+## Fritz (DNS Server)
+
+lalu diperlukan juga untuk setup forwarder di dns server agar client bisa connect
+
+```
+echo '
+options {
+        directory "/var/cache/bind";
+
+        forwarders {
+            192.168.122.1;
+        };
+
+        allow-query{any;};
+
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};' > /etc/bind/named.conf.options
+```
