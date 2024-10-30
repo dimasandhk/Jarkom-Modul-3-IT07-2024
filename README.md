@@ -608,9 +608,7 @@ service bind9 restart
 
 <img src="./img/no8generichash.png" />
 
-```
-Dari hasil pengujian performa load balancing pada server dengan empat metode (least connection, round robin, IP hash, dan generic hash), terlihat bahwa IP hash dan generic hash menawarkan performa terbaik dibandingkan dua metode lainnya. IP hash memiliki *Requests per Second* (RPS) tertinggi yaitu 462.99, diikuti oleh generic hash dengan 446.73. Kedua metode ini tidak mengalami kegagalan request, menunjukkan stabilitas tinggi dan kemampuan menangani beban secara efisien. Selain itu, transfer rate tertinggi dicapai oleh IP hash pada 711.67 Kbytes/sec, sedikit lebih baik dari generic hash yang memiliki 687.11 Kbytes/sec. Sebaliknya, metode least connection dan round robin menunjukkan performa yang kurang optimal, masing-masing dengan RPS 395.97 dan 346.93. Keduanya juga memiliki tingkat kegagalan request yang tinggi, masing-masing dengan 682 dan 666 kegagalan dari 1000 request. Berdasarkan data ini, dapat disimpulkan bahwa metode IP hash adalah pilihan terbaik untuk load balancing pada pengujian ini, diikuti oleh generic hash sebagai opsi yang hampir sebanding.
-```
+Dari hasil pengujian performa load balancing pada server dengan empat metode (least connection, round robin, IP hash, dan generic hash), terlihat bahwa IP hash dan generic hash menawarkan performa terbaik dibandingkan dua metode lainnya. IP hash memiliki _Requests per Second_ (RPS) tertinggi yaitu 462.99, diikuti oleh generic hash dengan 446.73. Kedua metode ini tidak mengalami kegagalan request, menunjukkan stabilitas tinggi dan kemampuan menangani beban secara efisien. Selain itu, transfer rate tertinggi dicapai oleh IP hash pada 711.67 Kbytes/sec, sedikit lebih baik dari generic hash yang memiliki 687.11 Kbytes/sec. Sebaliknya, metode least connection dan round robin menunjukkan performa yang kurang optimal, masing-masing dengan RPS 395.97 dan 346.93. Keduanya juga memiliki tingkat kegagalan request yang tinggi, masing-masing dengan 682 dan 666 kegagalan dari 1000 request. Berdasarkan data ini, dapat disimpulkan bahwa metode IP hash adalah pilihan terbaik untuk load balancing pada pengujian ini, diikuti oleh generic hash sebagai opsi yang hampir sebanding.
 
 Grafik
 <img src="./img/graf.png" />
@@ -626,6 +624,12 @@ Konfigurasi beberapa worker
 ```bash
 echo 'upstream worker3 {
     least_conn;
+    server 10.67.2.2;
+    server 10.67.2.3;
+    server 10.67.2.4;
+}
+
+upstream worker {
     server 10.67.2.2;
     server 10.67.2.3;
     server 10.67.2.4;
@@ -662,6 +666,10 @@ server {
 
     location /worker1 {
         proxy_pass http://worker1;
+    }
+
+    location / {
+        proxy_pass http://worker;
     }
 
 } ' > /etc/nginx/sites-available/lb_php
